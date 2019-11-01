@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/php:5.6
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "composer.json" }}
+          - v1-dependencies-
+
+      - run: composer install -n --prefer-dist
+
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.json" }}
+          paths:
+            - vendor
+
+
+      - run: mkdir -p results
+  
+      - run:
+          when: always
+          command: bin/phpunit --log-junit results/phpunit.xml
+      - run:
+          when: always
+          command: bin/behat -f pretty,progress,junit --out pretty.out,,results
+      - run:
+          when: always
+          command: cat results/*
+
+      - store_test_results:
+          path: results
+      - store_artifacts:
+          path: results
