@@ -39,6 +39,11 @@ class WeatherTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('a beautiful warm day', $weather->getSummary());
     }
 
+    public function testThatFails()
+    {
+        $this->assertEquals('black', 'white');
+    }
+
     public function testParseInputInvalid()
     {
         $expectedError = 'service currently not available';
